@@ -1,35 +1,43 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.PreparedStatement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Scanner;
 
-//Autor: Manuel Munguia Rubio
-//Clase de Desarrollo 2-3
+// Autor: Manuel Munguia Rubio
 public class Main {
+    public static void main(String[] args) throws IOException {
+        boolean seguir=true;
+        while (seguir){
+            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+            Scanner sc = new Scanner(System.in);
+            System.out.print("Ingrese su correo: ");
+            String program_username = sc.nextLine();
+            //No pude hacer lo de la contraseña profe probe de muchas maneras :(
+            System.out.print("Ingrese su contrasena: ");
+            String program_password = sc.nextLine();
+            String SQL = "SELECT username FROM users WHERE email = ? AND password = SHA2(?, 256)";
+            //System.out.println(SQL);
+            Connection conexion = Conexion.conexionsv(program_username, program_password, SQL);
 
-    public static void main(String[] args) {
-        //Una disculpa maestro por las dos clases lo hice para tener mas limpio el codigo y separado
-        String program_username = "manumr_04@hotmail.com";
-        String program_password = "1234567";
-        String SQL = "SELECT username FROM users WHERE email = ? AND password = SHA2(?, 256)";
-        System.out.println(SQL);
+            if (conexion != null) {
+                System.out.println("Successful connection to the database");
+                System.out.println("Welcome " + program_username);
+                //Punto de acceso
+                Conexion.Menu(conexion);
+                seguir = false;
 
-        Connection conexion = Conexion.conexionsv(program_username,program_password,SQL);
-        //El if corrobora la conexion en dado caso de no conectar no entra al programa con la sentencia (conexion != null)
-        if(conexion != null){
-            System.out.println("Welcome " + program_username);
-            //Punto de Acceso
-            Conexion.Menu(conexion);
+            } else {
+                System.out.println("Acceso denegado");
+                System.out.println("¿Quieres volver a intentar?\t" + "Selecciona S para si y N para no");
 
-        }else {
-            System.out.println("Access Denied");
+                String res = sc.next().toUpperCase();
+                if (res.equals("N")) seguir = false;
+
+            }
         }
 
-
     }
+
+
 }
